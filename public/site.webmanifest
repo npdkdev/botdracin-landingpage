@@ -1,0 +1,18 @@
+{
+  "name": "VIP Bot - Platform Streaming Telegram",
+  "short_name": "VIP Bot",
+  "description": "Platform streaming video Telegram siap pakai untuk bisnis Anda. Bot + Mini App + Admin Panel terintegrasi dengan pembayaran otomatis QRIS.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#6366f1",
+  "background_color": "#000000",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

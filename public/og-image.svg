@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <circle cx="150" cy="100" r="200" fill="#6366f1" opacity="0.1"/>
+  <circle cx="1050" cy="530" r="180" fill="#8b5cf6" opacity="0.1"/>
+  
+  <g transform="translate(100, 150)">
+    <circle cx="60" cy="60" r="50" fill="url(#accentGrad)" filter="url(#glow)"/>
+    <path d="M 45 50 L 60 60 L 60 35 Z M 60 60 L 60 85 L 75 75 Z" fill="white"/>
+  </g>
+  
+  <text x="200" y="200" font-family="'Arial', sans-serif" font-size="72" font-weight="800" fill="white">
+    VIP Bot
+  </text>
+  
+  <text x="200" y="260" font-family="'Arial', sans-serif" font-size="32" font-weight="600" fill="#a5b4fc">
+    Platform Streaming Telegram Siap Pakai
+  </text>
+  
+  <g transform="translate(200, 320)">
+    <rect x="0" y="0" width="800" height="2" fill="url(#accentGrad)" opacity="0.5"/>
+  </g>
+  
+  <g transform="translate(200, 360)">
+    <g transform="translate(0, 0)">
+      <circle cx="12" cy="12" r="8" fill="#6366f1"/>
+      <text x="30" y="18" font-family="'Arial', sans-serif" font-size="20" fill="#cbd5e1">Telegram Bot + Mini App</text>
+    </g>
+    <g transform="translate(0, 50)">
+      <circle cx="12" cy="12" r="8" fill="#8b5cf6"/>
+      <text x="30" y="18" font-family="'Arial', sans-serif" font-size="20" fill="#cbd5e1">Admin Web Panel</text>
+    </g>
+    <g transform="translate(0, 100)">
+      <circle cx="12" cy="12" r="8" fill="#6366f1"/>
+      <text x="30" y="18" font-family="'Arial', sans-serif" font-size="20" fill="#cbd5e1">QRIS Auto-Payment</text>
+    </g>
+  </g>
+  
+  <g transform="translate(600, 360)">
+    <g transform="translate(0, 0)">
+      <circle cx="12" cy="12" r="8" fill="#8b5cf6"/>
+      <text x="30" y="18" font-family="'Arial', sans-serif" font-size="20" fill="#cbd5e1">Referral System</text>
+    </g>
+    <g transform="translate(0, 50)">
+      <circle cx="12" cy="12" r="8" fill="#6366f1"/>
+      <text x="30" y="18" font-family="'Arial', sans-serif" font-size="20" fill="#cbd5e1">VIP Membership</text>
+    </g>
+    <g transform="translate(0, 100)">
+      <circle cx="12" cy="12" r="8" fill="#8b5cf6"/>
+      <text x="30" y="18" font-family="'Arial', sans-serif" font-size="20" fill="#cbd5e1">Unlimited Streaming</text>
+    </g>
+  </g>
+  
+  <g transform="translate(200, 560)">
+    <rect x="0" y="0" width="180" height="50" rx="25" fill="url(#accentGrad)"/>
+    <text x="90" y="33" font-family="'Arial', sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">Mulai dari 500K</text>
+  </g>
+  
+  <g transform="translate(400, 565)">
+    <text x="0" y="25" font-family="'Arial', sans-serif" font-size="16" fill="#94a3b8">t.me/NpDkProjects</text>
+  </g>
+</svg>
