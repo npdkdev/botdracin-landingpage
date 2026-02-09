@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@layer base {
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #020202;
+        color: white;
+        overflow-x: hidden;
+    }
+}
+
+@layer utilities {
+    .glass-panel {
+        @apply bg-white/[0.01] backdrop-blur-[50px] saturate-[150%] border border-white/[0.08] border-t-white/[0.15] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.1)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)];
+    }
+
+    .glass-panel-dark {
+        @apply bg-black/60 border border-white/[0.08] backdrop-blur-[30px];
+    }
+
+    .btn-modern {
+        @apply relative isolate overflow-hidden rounded-full font-semibold transition-all duration-300;
+    }
+
+    .btn-modern.btn-primary {
+        @apply bg-white/10 border border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.05)];
+    }
+
+    .btn-modern.btn-primary::before {
+        content: '';
+        @apply absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full transition-transform duration-500 ease-out z-[-1];
+    }
+
+    .btn-modern.btn-primary:hover::before {
+        @apply translate-x-full;
+    }
+
+    .btn-modern.btn-primary:hover {
+        @apply bg-white/15 border-white/40 shadow-[0_0_30px_rgba(255,255,255,0.1)] scale-[1.02];
+    }
+
+    .btn-modern.secondary {
+        @apply bg-white/[0.02] backdrop-blur-[10px] border border-white/15 border-b-white/5 text-white/70 hover:bg-white/5 hover:border-t-white/30 hover:text-white;
+    }
+
+    .glass-card-hover {
+        @apply transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2 hover:bg-white/5 hover:border-white/30 hover:shadow-[0_30px_60px_-10px_rgba(0,0,0,0.6)];
+    }
+
+    .modern-input {
+        @apply bg-white/[0.03] border border-white/10 rounded-2xl text-white transition-all duration-300;
+    }
+    .modern-input:focus {
+        @apply bg-white/[0.06] border-indigo-500/50 outline-none shadow-[0_0_0_4px_rgba(99,102,241,0.1)];
+    }
+
+    .feature-check li {
+        @apply relative pl-7 mb-3 text-slate-400;
+    }
+    .feature-check li::before {
+        content: '';
+        @apply absolute left-0 top-1 w-4 h-4 bg-contain bg-no-repeat;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    }
+
+    .reveal {
+        @apply opacity-0 translate-y-8 transition-all duration-800 ease-[cubic-bezier(0.22,1,0.36,1)];
+    }
+    .reveal.active {
+        @apply opacity-100 translate-y-0;
+    }
+
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+
+    .hover-shine {
+        @apply relative overflow-hidden;
+    }
+    .hover-shine::after {
+        content: '';
+        @apply absolute top-0 -left-[100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 z-20 transition-all duration-1000 ease-out;
+    }
+    .hover-shine:hover::after {
+        @apply left-[200%];
+    }
+
+    .text-glow {
+        text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+    }
+
+    .ai-content h1, .ai-content h2, .ai-content h3 {
+        @apply font-bold text-white mt-4 mb-2;
+    }
+    .ai-content p {
+        @apply text-slate-300 mb-4 leading-relaxed;
+    }
+    .ai-content ul {
+        @apply list-disc pl-6 text-slate-300 mb-4;
+    }
+    .ai-content strong {
+        @apply text-indigo-400;
+    }
+
+    /* FAQ Details Animation */
+    details > summary {
+        list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+        display: none;
+    }
+}
+
+@theme {
+  --animate-spin-slow: spin 20s linear infinite;
+  --animate-float: float 15s infinite ease-in-out;
+  --animate-float-reverse: float 18s infinite ease-in-out reverse;
+  --animate-float-delayed: float 12s infinite ease-in-out 1s;
+
+  @keyframes float {
+    0%, 100% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+  }
+}

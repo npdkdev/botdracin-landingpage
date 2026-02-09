@@ -1,0 +1,730 @@
+<script>
+    import { onMount } from 'svelte';
+    import { marked } from 'marked';
+    import { 
+        Play, PlayCircle, Check, Sparkles, Wand2, Bot, MessageCircle, 
+        Smartphone, LayoutDashboard, ArrowRight, CheckCircle2, ArrowDownLeft, 
+        Lock, Users, Crown, User, BarChart3, Film, Settings, ChevronDown, Zap, Loader2 
+    } from 'lucide-svelte';
+
+    let niche = '';
+    let isLoading = false;
+    let result = '';
+    let showResult = false;
+    let apiKey = ''; // Add your Gemini API key here
+
+    // Scroll Reveal Logic
+    onMount(() => {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    });
+
+    async function generateStrategy() {
+        if (!niche) {
+            alert("Silakan masukkan niche film terlebih dahulu!");
+            return;
+        }
+
+        if (!apiKey) {
+            alert("API Key belum diset. Silakan tambahkan API Key di kode sumber.");
+            return;
+        }
+
+        isLoading = true;
+        result = '';
+        showResult = false;
+
+        const prompt = `
+            Bertindaklah sebagai Konsultan Bisnis Digital profesional. 
+            Saya ingin membuat Bisnis Streaming Film di Telegram menggunakan "VIP Bot".
+            
+            Niche/Topik saya adalah: "${niche}".
+            
+            Berikan saya strategi singkat dalam format Markdown (tanpa code block):
+            1. **Target Audience**: Siapa yang akan menonton ini?
+            2. **Strategi Marketing**: 2 ide unik untuk mempromosikan niche ini.
+            3. **Proyeksi Harga**: Rekomendasi harga paket VIP mingguan & bulanan yang cocok untuk niche ini.
+            
+            Gunakan bahasa Indonesia yang persuasif, emoji yang relevan, dan format yang rapi. Buat jawaban yang singkat dan padat (maksimal 150 kata).
+        `;
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+
+            const aiText = data.candidates[0].content.parts[0].text;
+            
+            // Handle possible promise return from marked.parse
+            const parsed = marked.parse(aiText);
+            result = parsed instanceof Promise ? await parsed : parsed;
+            
+            showResult = true;
+            
+            // Scroll to result after render
+            setTimeout(() => {
+                const resultDiv = document.getElementById('aiResult');
+                if (resultDiv) {
+                    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Maaf, terjadi kesalahan: ' + error.message);
+        } finally {
+            isLoading = false;
+        }
+    }
+</script>
+
+<div class="noise-bg"></div>
+    
+<div class="ambient-light">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<!-- Floating Navigation Pill -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-2xl">
+    <div class="glass-panel rounded-full p-2 pl-6 pr-2 flex items-center justify-between shadow-2xl backdrop-blur-md border border-white/10">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+                <Play class="w-3.5 h-3.5 text-black fill-black ml-0.5" />
+            </div>
+            <span class="font-bold text-sm tracking-wide text-white">VIP Bot</span>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-400">
+            <a href="#ecosystem" class="hover:text-white transition-colors">Ekosistem</a>
+            <a href="#features" class="hover:text-white transition-colors">Fitur</a>
+            <a href="#pricing" class="hover:text-white transition-colors">Bisnis</a>
+        </div>
+
+        <a href="#contact" class="btn-modern btn-primary px-6 py-2.5 text-xs tracking-wider uppercase flex items-center gap-2">
+                Beli Sekarang
+            </a>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="min-h-screen flex flex-col items-center justify-center pt-30 md:pt-48 px-4 md:px-8 text-center relative z-10">
+    
+    <div class="max-w-5xl mx-auto flex flex-col items-center">
+
+        <h1 class="reveal delay-200 heading-xl text-6xl md:text-8xl mb-8">
+            Bisnis Streaming <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-white to-purple-300">Tanpa Coding.</span>
+        </h1>
+        
+        <p class="reveal delay-300 text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+            Bot Telegram, Mini App, dan Admin Panel dalam satu ekosistem. <br>
+            Otomatisasi 100% dari pembayaran hingga membership.
+        </p>
+
+        <div class="reveal delay-300 flex flex-col sm:flex-row gap-5 w-full justify-center mb-24">
+            <button class="btn-modern btn-primary px-10 py-4 text-sm uppercase tracking-widest shadow-xl">
+                Mulai Sekarang
+            </button>
+            <button class="btn-modern glass-panel px-10 py-4 text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/5">
+                <PlayCircle class="w-4 h-4" />
+                Lihat Demo
+            </button>
+        </div>
+
+        <!-- Hero Mockup 3D (Improved Layout) -->
+        <div class="relative w-full max-w-4xl md:max-w-4xl mx-auto h-[370px] md:h-[500px] [perspective:1000px] group px-4 md:px-0">
+            <!-- 3D Container -->
+            <div class="absolute inset-x-0 top-0 h-full glass-panel rounded-t-[2rem] md:rounded-t-[3rem] border-b-0 p-5 md:p-8 transform rotate-x-6 md:rotate-x-12 scale-[0.95] origin-bottom shadow-[0_-20px_60px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-700 ease-out group-hover:rotate-x-0 group-hover:scale-100">
+                
+                <!-- Mockup Header -->
+                <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="p-2 rounded-lg bg-indigo-500/20">
+                            <LayoutDashboard class="w-5 h-5 text-indigo-400" />
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-white">Admin Dashboard</div>
+                            <div class="text-[10px] text-white/40 font-mono">v2.4.0 • Live</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <div class="text-xs font-bold text-white">Administrator</div>
+                            <div class="text-[10px] text-green-400 flex items-center justify-end gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> Online
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-[1px]">
+                            <div class="w-full h-full rounded-full bg-black flex items-center justify-center text-xs font-bold">A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mockup Body -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 h-full content-start">
+                    
+                    <!-- Main Chart Area (Left) -->
+                    <div class="md:col-span-2 space-y-4">
+                        <!-- Stat Cards Row -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="glass-panel p-3 rounded-xl border border-white/5 hover:bg-white/5 transition-colors">
+                                <div class="text-[10px] text-white/40 mb-1 uppercase tracking-wider">Total Revenue</div>
+                                <div class="text-lg md:text-xl font-bold text-white">Rp 14.2M</div>
+                                <div class="text-[10px] text-green-400 flex items-center gap-1 mt-1">
+                                    <ArrowDownLeft class="w-3 h-3 rotate-180" /> +12.5% vs last week
+                                </div>
+                            </div>
+                             <div class="glass-panel p-3 rounded-xl border border-white/5 hover:bg-white/5 transition-colors">
+                                <div class="text-[10px] text-white/40 mb-1 uppercase tracking-wider">Active Users</div>
+                                <div class="text-lg md:text-xl font-bold text-white">1,240</div>
+                                <div class="text-[10px] text-green-400 flex items-center gap-1 mt-1">
+                                    <Users class="w-3 h-3" /> +84 new today
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Placeholder -->
+                        <div class="h-32 md:h-60 rounded-xl bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/10 relative overflow-hidden group-hover:border-indigo-500/30 transition-colors">
+                            <div class="absolute top-3 left-3 flex gap-2">
+                                <div class="w-2 h-2 rounded-full bg-indigo-500/50"></div>
+                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                            </div>
+                            <!-- Simulated Graph Lines -->
+                            <svg class="absolute bottom-0 left-0 right-0 h-48 w-full stroke-indigo-400/50 fill-indigo-500/10" viewBox="0 0 100 40" preserveAspectRatio="none">
+                                <path d="M0 40 L0 30 Q10 25 20 32 T40 20 T60 25 T80 15 L100 10 L100 40 Z" />
+                                <path d="M0 30 Q10 25 20 32 T40 20 T60 25 T80 15 L100 10" fill="none" stroke-width="0.5" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar (Activity) -->
+                    <div class="space-y-3 hidden md:block">
+                         <div class="flex justify-between items-end mb-2">
+                             <div class="text-xs font-bold text-white/50 uppercase tracking-wider">Live Feed</div>
+                             <div class="text-[10px] text-indigo-400 cursor-pointer hover:text-indigo-300">View All</div>
+                         </div>
+                         
+                         <!-- Activity Item -->
+                         <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-default">
+                            <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 shrink-0">
+                                <CheckCircle2 class="w-4 h-4" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-xs font-bold text-white truncate">New VIP Order</div>
+                                <div class="text-[10px] text-white/50">User #8821 • 2m ago</div>
+                            </div>
+                         </div>
+                         
+                         <!-- Activity Item -->
+                         <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-default">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                                <User class="w-4 h-4" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-xs font-bold text-white truncate">New Registration</div>
+                                <div class="text-[10px] text-white/50">User #8822 • Just now</div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Floating Notification -->
+                <div class="absolute bottom-6 md:bottom-10 right-2 md:-right-2 glass-panel rounded-xl p-2 md:p-4 flex items-center gap-3 animate-bounce shadow-2xl border-green-500/30 bg-black/80 backdrop-blur-xl z-20 w-[60%] md:w-[70%] max-w-sm">
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-500 flex items-center justify-center text-black font-bold shadow-[0_0_20px_rgba(34,197,94,0.4)] shrink-0">
+                        <Check class="w-5 h-5 md:w-6 md:h-6" />
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-white/60 uppercase font-bold tracking-wider">Payment Received</div>
+                        <div class="text-lg md:text-xl font-bold text-white">Rp 350.000</div>
+                        <div class="text-[10px] text-white/40 mt-0.5">via QRIS Automated</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Planner Section -->
+<section class="py-32 px-4 relative z-10">
+    <div class="max-w-2xl md:max-w-4xl mx-auto reveal">
+        <div class="glass-panel rounded-[3rem] p-10 md:p-16 relative overflow-hidden border-indigo-500/30">
+            <!-- Decorative BG -->
+            <div class="absolute top-0 right-0 p-12 opacity-40 pointer-events-none blur-3xl">
+                <div class="w-64 h-64 bg-indigo-500 rounded-full"></div>
+            </div>
+            
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-400/30 bg-indigo-500/10 text-indigo-300 text-xs font-bold tracking-wider uppercase mb-6">
+                    <Sparkles class="w-3 h-3" /> Gemini AI Powered
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">AI Business Planner</h2>
+                <p class="text-slate-400 text-lg mb-10 max-w-xl">
+                    Bingung mulai dari mana? Masukkan niche film Anda (misal: "Drama Korea" atau "Anime"), AI akan merancang strategi bisnis instan.
+                </p>
+
+                <div class="space-y-6 max-w-xl">
+                    <div>
+                        <label for="nicheInput" class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 ml-1">Target Niche</label>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <input type="text" id="nicheInput" placeholder="Contoh: Film Horor Jadul..." 
+                                bind:value={niche}
+                                class="flex-1 modern-input px-6 py-4 placeholder-slate-600">
+                            <button on:click={generateStrategy} disabled={isLoading} id="generateBtn" class="btn-modern btn-primary px-8 py-4 whitespace-nowrap flex items-center justify-center gap-2">
+                                {#if isLoading}
+                                    <span>Menganalisa...</span>
+                                    <Loader2 class="w-4 h-4 animate-spin" />
+                                {:else}
+                                    <span>Analisa</span>
+                                    <Wand2 class="w-4 h-4" />
+                                {/if}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Result Area -->
+                    {#if showResult}
+                        <div id="aiResult">
+                            <div class="glass-panel-dark rounded-3xl p-8 mt-8 border border-indigo-500/30">
+                                <div class="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shadow-[0_0_15px_#6366f1]">
+                                        <Bot class="w-4 h-4 text-white" />
+                                    </div>
+                                    <span class="font-bold text-indigo-300 tracking-wide">Strategi Bisnis Gemini</span>
+                                </div>
+                                <div class="ai-content text-sm md:text-base">
+                                    {@html result}
+                                </div>
+                            </div>
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bento Grid Section -->
+<section id="ecosystem" class="py-20 px-4 relative z-10">
+    <div class="max-w-2xl md:max-w-4xl mx-auto">
+        <div class="mb-16 md:flex md:items-end md:justify-between reveal">
+            <h2 class="text-4xl md:text-5xl font-bold max-w-md leading-tight text-white">Ekosistem <br><span class="text-slate-500">All-in-One.</span></h2>
+            <p class="text-slate-400 mt-4 md:mt-0 text-right max-w-xs">3 platform canggih yang bekerja sinkron untuk bisnis Anda.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(200px,auto)]">
+            
+            <!-- Main Card -->
+            <div class="md:col-span-2 md:row-span-2 glass-panel rounded-[2.5rem] p-10 relative overflow-hidden group reveal">
+                <div class="absolute -right-10 -top-10 w-64 h-64 bg-indigo-500/20 rounded-full blur-[80px] group-hover:bg-indigo-500/30 transition-colors"></div>
+                <div class="relative z-10 flex flex-col h-full justify-between">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center mb-6 shadow-xl shadow-indigo-500/20">
+                        <MessageCircle class="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold mb-4 text-white">Telegram Bot</h3>
+                        <p class="text-slate-400 text-lg max-w-md leading-relaxed">
+                            Jantung bisnis Anda. Interface utama dimana user mencari film, menonton trailer, dan melakukan pembelian VIP secara instan.
+                        </p>
+                    </div>
+                    <div class="mt-10 flex gap-3 flex-wrap">
+                        <span class="px-4 py-2 rounded-full glass-panel-dark border border-white/5 text-xs font-bold text-indigo-200">Deep Link</span>
+                        <span class="px-4 py-2 rounded-full glass-panel-dark border border-white/5 text-xs font-bold text-indigo-200">Inline Search</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Card -->
+            <div class="md:row-span-2 glass-panel rounded-[2.5rem] p-8 relative overflow-hidden group flex flex-col reveal delay-100">
+                <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-auto border border-white/10 group-hover:scale-110 transition-transform">
+                    <Smartphone class="w-6 h-6 text-white" />
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold mb-2 text-white">Mini App</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">Dashboard modern embedded di Telegram.</p>
+                    <!-- Mini UI -->
+                    <div class="glass-panel-dark rounded-2xl p-5 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 border border-white/5">
+                        <div class="flex justify-between text-[10px] uppercase tracking-widest text-slate-500 mb-1">Saldo Wallet</div>
+                        <div class="text-2xl font-bold text-white">Rp 1.25jt</div>
+                        <div class="w-full h-1 bg-white/10 rounded-full mt-3 overflow-hidden">
+                            <div class="w-3/4 h-full bg-indigo-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wide Card -->
+            <div class="md:col-span-3 glass-panel rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 reveal delay-200">
+                <div class="flex items-center gap-6">
+                    <div class="w-20 h-20 rounded-3xl bg-pink-500/10 flex items-center justify-center border border-pink-500/20">
+                        <LayoutDashboard class="w-8 h-8 text-pink-400" />
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white">Admin Panel Web</h3>
+                        <p class="text-slate-400 text-sm mt-1">Kendali penuh. Upload film & pantau revenue.</p>
+                    </div>
+                </div>
+                <button class="btn-modern glass-panel-dark border border-white/10 px-8 py-4 text-sm font-bold flex items-center gap-3 hover:bg-white/5">
+                    Lihat Dashboard <ArrowRight class="w-4 h-4" />
+                </button>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-32 px-4 relative z-10">
+    <div class="max-w-2xl md:max-w-4xl mx-auto space-y-32">
+        
+        <!-- Feature 1: Finance -->
+        <div class="flex flex-col md:flex-row items-center gap-16 reveal">
+            <div class="flex-1 space-y-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-[10px] font-bold tracking-widest uppercase">
+                    Financial Automation
+                </div>
+                <h2 class="text-4xl md:text-6xl font-bold leading-tight text-white">Uang Masuk <br>Saat Anda Tidur.</h2>
+                <p class="text-slate-400 text-lg leading-relaxed">
+                    Sistem pembayaran otomatis 24 jam. QRIS muncul instan, verifikasi otomatis via webhook, aktivasi VIP tanpa manual.
+                </p>
+                <ul class="feature-check space-y-3 mt-4 text-sm font-medium">
+                    <li>Integrasi Saweria & Trakteer</li>
+                    <li>QRIS Dinamis (Auto-Generate)</li>
+                    <li>Instant Settlement ke Wallet</li>
+                </ul>
+            </div>
+            <div class="flex-1 w-full">
+                <div class="glass-panel rounded-[3rem] p-8 relative rotate-2 hover:rotate-0 transition-transform duration-700 shadow-2xl border-t border-green-500/20">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent rounded-[3rem]"></div>
+                    <div class="space-y-4 relative z-10">
+                        <!-- Payment Notification 1 -->
+                        <div class="glass-panel-dark rounded-2xl p-6 flex justify-between items-center border border-white/5">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                                    <ArrowDownLeft class="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div class="font-bold text-white">Paket 30 Hari</div>
+                                    <div class="text-[10px] uppercase tracking-wider text-slate-500">Success • via Trakteer</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-green-400">+Rp 35.000</div>
+                                <div class="text-[10px] text-slate-600">Just Now</div>
+                            </div>
+                        </div>
+                        <!-- Payment Notification 2 -->
+                        <div class="glass-panel-dark rounded-2xl p-6 flex justify-between items-center border border-white/5 opacity-60">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-400/50">
+                                    <ArrowDownLeft class="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div class="font-bold text-white">Paket 7 Hari</div>
+                                    <div class="text-[10px] uppercase tracking-wider text-slate-500">Success • via Saweria</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-green-400/70">+Rp 10.000</div>
+                                <div class="text-[10px] text-slate-600">2m ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 2: Strategy -->
+        <div class="flex flex-col md:flex-row-reverse items-center gap-16 reveal">
+            <div class="flex-1 space-y-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-[10px] font-bold tracking-widest uppercase">
+                    Engagement Control
+                </div>
+                <h2 class="text-4xl md:text-6xl font-bold leading-tight text-white">Privasi atau <br>Viralitas?</h2>
+                <p class="text-slate-400 text-lg leading-relaxed">
+                    Kendalikan cara audiens menikmati konten. Mode <strong>Privacy</strong> untuk eksklusivitas atau <strong>Watch Together</strong> untuk viralitas grup.
+                </p>
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="glass-panel p-6 rounded-3xl text-center border border-white/5 hover:border-white/10 transition-colors">
+                        <Lock class="w-8 h-8 text-white mb-4 mx-auto" />
+                        <div class="text-sm font-bold text-white">Privacy Mode</div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-3xl text-center bg-blue-500/10 border border-blue-500/30">
+                        <Users class="w-8 h-8 text-blue-400 mb-4 mx-auto" />
+                        <div class="text-sm font-bold text-blue-300">Group Watch</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 w-full relative">
+                <div class="glass-panel rounded-[2.5rem] p-4 w-3/4 absolute top-0 left-0 z-10 transform -rotate-3 border border-blue-500/30 shadow-[0_20px_50px_rgba(59,130,246,0.15)]">
+                    <div class="aspect-video bg-blue-950/50 rounded-2xl flex items-center justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <Play class="w-12 h-12 fill-white text-white relative z-10 drop-shadow-lg" />
+                        <div class="absolute bottom-4 left-4 right-4 flex gap-2 items-center">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded-full bg-slate-400 border border-black"></div>
+                                <div class="w-6 h-6 rounded-full bg-slate-300 border border-black"></div>
+                                <div class="w-6 h-6 rounded-full bg-slate-200 border border-black"></div>
+                            </div>
+                            <div class="text-[10px] text-blue-200 font-bold ml-auto bg-blue-500/20 px-2 py-1 rounded-full">128 WATCHING</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-[2.5rem] p-4 w-3/4 ml-auto mt-24 transform rotate-3 opacity-40 blur-[1px]">
+                        <div class="aspect-video bg-white/5 rounded-2xl flex items-center justify-center">
+                            <Lock class="w-10 h-10 text-white/30" />
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 3: Viral (Updated Complex Visual) -->
+        <div class="text-center max-w-4xl mx-auto pt-10 reveal">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-[10px] font-bold tracking-widest uppercase mb-8">
+                Organic Growth
+            </div>
+            <h2 class="text-4xl md:text-7xl font-bold mb-8 text-white">User = Marketing.</h2>
+            <p class="text-slate-400 text-xl max-w-2xl mx-auto mb-20">
+                Sistem komisi bertingkat membuat user berlomba-lomba mengajak teman. <br>Tanpa biaya iklan.
+            </p>
+            
+            <div class="relative h-[550px] glass-panel rounded-[3rem] w-full overflow-hidden flex items-center justify-center border border-purple-500/20 shadow-[0_0_80px_rgba(168,85,247,0.1)]">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15),transparent_70%)]"></div>
+                
+                <!-- Network Visualization -->
+                <div class="relative w-full h-full flex items-center justify-center">
+                    
+                    <!-- Orbits (Static Visuals for structure) -->
+                    <div class="absolute w-[350px] h-[350px] rounded-full border border-purple-500/10 border-dashed opacity-50 animate-[spin_60s_linear_infinite]"></div>
+                    <div class="absolute w-[500px] h-[500px] rounded-full border border-purple-500/5 opacity-30"></div>
+
+                    <!-- Center Node -->
+                    <div class="absolute z-30 flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full glass-panel bg-gradient-to-br from-white/10 to-purple-500/10 border border-purple-500/50 flex items-center justify-center shadow-[0_0_60px_rgba(168,85,247,0.4)] relative">
+                            <div class="absolute inset-0 rounded-full border border-purple-500/30 animate-ping opacity-20"></div>
+                            <Crown class="w-10 h-10 text-purple-300 fill-purple-300/20" />
+                        </div>
+                        <div class="mt-4 glass-panel px-4 py-1.5 rounded-full text-[10px] font-bold text-white tracking-widest uppercase shadow-lg border border-purple-500/20">YOU</div>
+                    </div>
+
+                    <!-- Spinning Layer 1 (Inner Network - 3 Nodes) -->
+                    <div class="absolute inset-0 animate-[spin_40s_linear_infinite]">
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none stroke-purple-500/30" stroke-width="1.5">
+                            <!-- Lines to Center -->
+                            <line x1="50%" y1="50%" x2="50%" y2="30%" />
+                            <line x1="50%" y1="50%" x2="33%" y2="60%" />
+                            <line x1="50%" y1="50%" x2="67%" y2="60%" />
+                            <!-- Connections between nodes -->
+                            <line x1="50%" y1="30%" x2="33%" y2="60%" stroke-opacity="0.3" stroke-width="0.5" />
+                            <line x1="33%" y1="60%" x2="67%" y2="60%" stroke-opacity="0.3" stroke-width="0.5" />
+                            <line x1="67%" y1="60%" x2="50%" y2="30%" stroke-opacity="0.3" stroke-width="0.5" />
+                        </svg>
+                        
+                        <div class="absolute top-[30%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full glass-panel bg-black/40 flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(168,85,247,0.2)] z-10">
+                            <User class="w-5 h-5 text-white/20" />
+                        </div>
+                        <div class="absolute top-[60%] left-[33%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full glass-panel bg-black/40 flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(168,85,247,0.2)] z-10">
+                            <User class="w-5 h-5 text-white/20" />
+                        </div>
+                        <div class="absolute top-[60%] left-[67%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full glass-panel bg-black/40 flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(168,85,247,0.2)] z-10">
+                            <User class="w-5 h-5 text-white/20" />
+                        </div>
+                    </div>
+
+                    <!-- Spinning Layer 2 (Outer Network - 5 Nodes - Reverse) -->
+                    <div class="absolute inset-0 animate-[spin_60s_linear_infinite_reverse]">
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none stroke-purple-500/10" stroke-width="1">
+                            <!-- Lines connecting to center (faint) -->
+                            <line x1="50%" y1="50%" x2="50%" y2="10%" />
+                            <line x1="50%" y1="50%" x2="85%" y2="35%" />
+                            <line x1="50%" y1="50%" x2="75%" y2="85%" />
+                            <line x1="50%" y1="50%" x2="25%" y2="85%" />
+                            <line x1="50%" y1="50%" x2="15%" y2="35%" />
+                        </svg>
+
+                        <!-- Outer Nodes -->
+                        <div class="absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass-panel bg-white/5 border border-white/10 flex items-center justify-center z-10">
+                            <User class="w-3 h-3 text-white/40" />
+                        </div>
+                        <div class="absolute top-[35%] left-[85%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass-panel bg-white/5 border border-white/10 flex items-center justify-center z-10">
+                            <User class="w-3 h-3 text-white/40" />
+                        </div>
+                        <div class="absolute top-[85%] left-[75%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass-panel bg-white/5 border border-white/10 flex items-center justify-center z-10">
+                            <User class="w-3 h-3 text-white/40" />
+                        </div>
+                        <div class="absolute top-[85%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass-panel bg-white/5 border border-white/10 flex items-center justify-center z-10">
+                            <User class="w-3 h-3 text-white/40" />
+                        </div>
+                        <div class="absolute top-[35%] left-[15%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full glass-panel bg-white/5 border border-white/10 flex items-center justify-center z-10">
+                            <User class="w-3 h-3 text-white/40" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-32 px-4 relative z-10">
+    <div class="max-w-2xl md:max-w-4xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold text-center mb-20 text-white">Potensi Bisnis Realistis</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <!-- Side Card -->
+            <div class="glass-panel rounded-[2.5rem] p-10 text-center opacity-60 hover:opacity-100 transition-opacity reveal">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Unit Price</div>
+                <div class="text-5xl font-bold text-white mb-2 tracking-tight">35k</div>
+                <p class="text-slate-500 text-xs font-medium">Paket VIP 30 Hari</p>
+                <div class="my-8 h-px bg-white/5 w-full"></div>
+                <ul class="text-sm text-slate-400 space-y-3">
+                    <li>Fee Admin: 5%</li>
+                    <li>Fee Referral: 20%</li>
+                </ul>
+            </div>
+
+            <!-- Featured Card -->
+            <div class="glass-panel rounded-[3rem] p-12 text-center transform md:scale-110 z-10 border border-indigo-500/30 bg-indigo-500/5 relative reveal delay-100">
+                <div class="absolute -top-5 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-indigo-500/40">
+                    Target Bulan 1
+                </div>
+                <div class="text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] mb-6">100 User Aktif</div>
+                <div class="text-6xl font-bold text-white mb-2 tracking-tighter text-glow">3.6 Juta</div>
+                <p class="text-indigo-200/50 text-sm font-medium">Estimasi Profit / Bulan</p>
+                
+                <div class="mt-10 pt-10 border-t border-indigo-500/20">
+                    <button class="btn-modern btn-primary w-full py-4 text-sm font-bold uppercase tracking-wider">
+                        Ambil Peluang
+                    </button>
+                </div>
+            </div>
+
+            <!-- Side Card -->
+            <div class="glass-panel rounded-[2.5rem] p-10 text-center opacity-60 hover:opacity-100 transition-opacity reveal delay-200">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">LTV</div>
+                <div class="text-5xl font-bold text-green-400 mb-2 tracking-tight">∞</div>
+                <p class="text-slate-500 text-xs font-medium">Recurring Income</p>
+                <div class="my-8 h-px bg-white/5 w-full"></div>
+                <ul class="text-sm text-slate-400 space-y-3">
+                    <li>Auto Expire</li>
+                    <li>High Retention</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section (Restored & Enhanced) -->
+<section id="faq" class="py-32 px-4 relative z-10">
+    <div class="max-w-2xl md:max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16 text-white reveal">Tanya Jawab</h2>
+        <div class="space-y-4 reveal delay-100">
+            
+            <details class="glass-panel rounded-2xl group overflow-hidden">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs">01</div>
+                        Apakah saya perlu skill coding?
+                    </span>
+                    <span class="transition-transform group-open:rotate-180">
+                        <ChevronDown class="text-slate-400" />
+                    </span>
+                </summary>
+                <div class="text-slate-400 px-6 pb-8 pt-2 ml-11 leading-relaxed text-sm border-t border-white/5">
+                    TIDAK! Semua sudah siap pakai. Anda hanya perlu bisa chat Telegram dan upload file. Panel Admin menggunakan antarmuka grafis (GUI) yang mudah, tinggal klik.
+                </div>
+            </details>
+
+            <details class="glass-panel rounded-2xl group overflow-hidden">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs">02</div>
+                        Apakah video disimpan di server saya?
+                    </span>
+                    <span class="transition-transform group-open:rotate-180">
+                        <ChevronDown class="text-slate-400" />
+                    </span>
+                </summary>
+                <div class="text-slate-400 px-6 pb-8 pt-2 ml-11 leading-relaxed text-sm border-t border-white/5">
+                    TIDAK! Video disimpan di server Telegram (gratis & unlimited). Server VPS Anda hanya menyimpan data transaksi dan user, jadi sangat hemat biaya storage!
+                </div>
+            </details>
+
+            <details class="glass-panel rounded-2xl group overflow-hidden">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs">03</div>
+                        Berapa modal yang dibutuhkan?
+                    </span>
+                    <span class="transition-transform group-open:rotate-180">
+                        <ChevronDown class="text-slate-400" />
+                    </span>
+                </summary>
+                <div class="text-slate-400 px-6 pb-8 pt-2 ml-11 leading-relaxed text-sm border-t border-white/5">
+                    Sangat rendah. Software sekali bayar. Anda hanya butuh VPS kecil (Rp 100rb-an/bulan) dan konten video bisa didapat gratis dari internet.
+                </div>
+            </details>
+
+            <details class="glass-panel rounded-2xl group overflow-hidden">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs">04</div>
+                        Bagaimana support & update?
+                    </span>
+                    <span class="transition-transform group-open:rotate-180">
+                        <ChevronDown class="text-slate-400" />
+                    </span>
+                </summary>
+                <div class="text-slate-400 px-6 pb-8 pt-2 ml-11 leading-relaxed text-sm border-t border-white/5">
+                    Kami memberikan garansi lifetime support untuk perbaikan bug dan update maintenance sistem agar bot tetap berjalan lancar.
+                </div>
+            </details>
+
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-20 mt-20 relative border-t border-white/5 bg-black/40 backdrop-blur-xl z-10">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <div class="mb-12">
+            <Zap class="w-10 h-10 text-white mx-auto mb-6" />
+            <h3 class="text-2xl font-bold text-white mb-2">VIP Bot Platform</h3>
+            <p class="text-slate-500 text-sm">Platform streaming automation masa depan.</p>
+        </div>
+        <div class="text-slate-600 text-xs">
+            &copy; 2026 VIP Bot. All rights reserved.
+        </div>
+    </div>
+</footer>
